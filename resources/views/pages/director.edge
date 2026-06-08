@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Direction - Suivi des Présences</title>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+  <nav class="bg-blue-900 text-white shadow-md px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-3">
+      <span class="text-2xl">📊</span>
+      <h1 class="text-xl font-bold tracking-wide">Direction - Système Présence</h1>
+    </div>
+    <div class="bg-blue-800 px-4 py-2 rounded-lg text-sm font-semibold">
+      Session Directeur Malasi
+    </div>
+  </nav>
+
+  <div class="max-w-6xl mx-auto p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium uppercase">Scans totaux</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{ attendances.length }}</p>
+        </div>
+        <div class="bg-blue-50 text-blue-600 p-4 rounded-xl text-2xl">✅</div>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium uppercase">Statut Système</p>
+          <p class="text-lg font-semibold text-green-600 mt-1">En ligne (Neon Connected)</p>
+        </div>
+        <div class="bg-green-50 text-green-600 p-4 rounded-xl text-2xl">🌐</div>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium uppercase">Mode de rafraîchissement</p>
+          <button onclick="window.location.reload()" class="mt-2 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-lg transition">
+            Actualiser les données 🔄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+        <h2 class="text-lg font-bold text-gray-800">Registre d'émargement en temps réel</h2>
+        <span class="text-xs bg-blue-100 text-blue-800 font-semibold px-2.5 py-1 rounded-full">Mis à jour</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 text-gray-500 text-xs font-semibold uppercase tracking-wider border-b border-gray-100">
+              <th class="p-4">Étudiant</th>
+              <th class="p-4">Cours</th>
+              <th class="p-4">Enseignant / Validateur</th>
+              <th class="p-4">Date & Heure du scan</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700 text-sm divide-y divide-gray-100">
+            @if(attendances.length === 0)
+              <tr>
+                <td colspan="4" class="p-8 text-center text-gray-400 italic">
+                  Aucun scan n'a encore été enregistré aujourd'hui.
+                </td>
+              </tr>
+            @else
+              @each(attendance in attendances)
+                <tr class="hover:bg-gray-50 transition">
+                  <td class="p-4 font-semibold text-gray-900">
+                    {{ attendance.student?.fullName || 'Étudiant inconnu' }}
+                  </td>
+                  <td class="p-4">
+                    <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium">
+                      {{ attendance.course?.name || 'Cours inconnu' }}
+                    </span>
+                  </td>
+                  <td class="p-4 text-gray-600">
+                    {{ attendance.teacher?.fullName || 'Professeur' }}
+                  </td>
+                  <td class="p-4 text-gray-500 font-mono text-xs">
+                    {{ attendance.createdAt.toFormat('dd/MM/yyyy HH:mm:ss') }}
+                  </td>
+                </tr>
+              @endeach
+            @endif
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

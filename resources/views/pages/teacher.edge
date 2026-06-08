@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Professeur - Scanner</title>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-4 font-sans">
+
+  <div class="w-full max-w-md bg-gray-800 p-6 rounded-2xl shadow-2xl border border-gray-700 mt-6">
+    <h1 class="text-2xl font-bold text-green-400 text-center mb-1">Espace Enseignant</h1>
+    <p class="text-gray-400 text-xs text-center mb-6">Sélectionnez votre cours et scannez les étudiants.</p>
+
+    <div class="mb-6">
+      <label for="courseSelect" class="block text-sm font-medium text-gray-300 mb-2">Cours actuel :</label>
+      <select id="courseSelect" class="w-full bg-gray-700 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+        @each(course in courses)
+          <option value="{{ course.id }}">{{ course.name }}</option>
+        @endeach
+      </select>
+    </div>
+
+    <div class="relative bg-black rounded-xl overflow-hidden border border-gray-700 aspect-square flex items-center justify-center mb-4">
+      <div id="reader" class="w-full h-full"></div>
+    </div>
+
+    <div id="resultMessage" class="hidden p-3 rounded-xl text-center text-sm font-semibold transition"></div>
+  </div>
+
+  <script>
+    // Configuration du scanner dès que la page est chargée
+    function onScanSuccess(decodedText, decodedResult) {
+      try {
+        // Le QR code contient du JSON : { "student_name": "...", "generated_at": "..." }
+        const data = JSON.parse(decodedText);
+        const studentName = data.student_name;
+        const courseId = document.getElementById('courseSelect').value;
+
+        // On arrête temporairement le scanner pour éviter de scanner 50 fois la même chose
+        html5QrcodeScanner.clear();
+
+        // Envoi des données à notre serveur AdonisJS / Neon via Fetch API
+        fetch('/api/attendance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ studentName, courseId })
+        })
+        .then(res => res.json())
+        .then(result => {
+          const msgDiv = document.getElementById('resultMessage');
+          msgDiv.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+          
+          if (result.success) {
+            msgDiv.innerText = result.message;
+            msgDiv.classList.add('bg-green-500', 'text-white');
+          } else {
+            msgDiv.innerText = "Erreur lors de la validation.";
+            msgDiv.classList.add('bg-red-500', 'text-white');
+          }
+
+          // On relance le scanner après 3 secondes pour l'étudiant suivant
+          setTimeout(() => {
+            msgDiv.classList.add('hidden');
+            startScanner();
+          }, 3000);
+        });
+
+      } catch (e) {
+        alert("QR Code invalide ou mal formaté !");
+      }
+    }
+
+    let html5QrcodeScanner;
+    function startScanner() {
+      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+      html5QrcodeScanner.render(onScanSuccess);
+    }
+
+    // Lancement du scanner au chargement de la page
+    startScanner();
+  </script>
+</body>
+</html>

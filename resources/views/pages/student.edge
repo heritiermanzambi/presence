@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Étudiant - Présence</title>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md text-center">
+    <h1 class="text-2xl font-bold text-blue-600 mb-2">Générateur de Présence</h1>
+    <p class="text-gray-500 text-sm mb-6">Entre ton nom complet pour générer ton QR Code.</p>
+    <div class="space-y-4 text-left">
+      <input type="text" id="fullName" placeholder="Ex: Christian Kabeya" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      <button onclick="generateQR()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition">Générer mon QR Code Tokosss</button>
+    </div>
+    <div id="qrContainer" class="hidden mt-8 border-t pt-6 flex flex-col items-center">
+      <canvas id="qrCanvas" class="bg-white p-2 rounded-lg shadow-md"></canvas>
+      <p id="qrLabel" class="text-lg font-bold text-gray-800 mt-2"></p>
+    </div>
+  </div>
+  <script>
+    function generateQR() {
+      const name = document.getElementById('fullName').value.trim();
+      if (!name) return alert("Écris ton nom complet !");
+      new QRious({ element: document.getElementById('qrCanvas'), value: JSON.stringify({ student_name: name, generated_at: new Date().toISOString() }), size: 200 });
+      document.getElementById('qrLabel').innerText = name;
+      document.getElementById('qrContainer').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
