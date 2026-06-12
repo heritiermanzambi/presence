@@ -8,8 +8,8 @@ export default class SessionController {
 
     const user = await User.findBy('email', email)
     
-    // user.password est maintenant parfaitement reconnu par TypeScript !
-    if (!user || !(await hash.verify(user.password, password))) {
+    // Le "(user as any)" dit à TypeScript : "Tais-toi, je sais ce que je fais, password existe !"
+    if (!user || !(await hash.verify((user as any).password, password))) {
       session.flash('errors', 'Identifiants invalides')
       return response.redirect().toPath('/') 
     }
