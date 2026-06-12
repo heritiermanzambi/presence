@@ -9,6 +9,7 @@ export default class NewAccountController {
   async store({ request, response, auth }: HttpContext) {
     const data = request.only(['fullName', 'email', 'password'])
     
+    // Plus aucun soulignement rouge ici !
     const user = await User.create({
       fullName: data.fullName || '',
       email: data.email,
@@ -16,8 +17,6 @@ export default class NewAccountController {
     })
 
     await auth.use('web').login(user)
-    
-    // Correction ici : on utilise toPath pour éviter le conflit de nom de route
     return response.redirect().toPath('/')
   }
 }

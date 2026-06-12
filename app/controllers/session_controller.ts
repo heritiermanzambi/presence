@@ -6,16 +6,14 @@ export default class SessionController {
   async store({ request, response, auth, session }: HttpContext) {
     const { email, password } = request.only(['email', 'password'])
 
-    // 1. Trouver l'utilisateur par son email
     const user = await User.findBy('email', email)
     
-    // 2. Vérifier si le mot de passe correspond
+    // user.password est maintenant parfaitement reconnu par TypeScript !
     if (!user || !(await hash.verify(user.password, password))) {
       session.flash('errors', 'Identifiants invalides')
-      return response.redirect().toPath('/') // Redirige vers l'accueil
+      return response.redirect().toPath('/') 
     }
 
-    // 3. Connecter l'utilisateur
     await auth.use('web').login(user)
     return response.redirect().toPath('/')
   }
