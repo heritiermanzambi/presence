@@ -9,7 +9,6 @@ export default class NewAccountController {
   async store({ request, response, auth }: HttpContext) {
     const data = request.only(['fullName', 'email', 'password'])
     
-    // @ts-ignore
     const user = await User.create({
       fullName: data.fullName || '',
       email: data.email,
