@@ -71,8 +71,7 @@
     "edge.js": "^6.5.1",
     "luxon": "^3.7.2",
     "pg": "^8.21.0",
-    "reflect-metadata": "^0.2.2",
-    "tailwind": "^2.3.1"
+    "reflect-metadata": "^0.2.2"
   },
   "hotHook": {
     "boundaries": [
