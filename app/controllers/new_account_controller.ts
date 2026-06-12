@@ -1,28 +1,23 @@
-import User from '#models/user'
-import { signupValidator } from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
+import User from '#models/user'
 
-/**
- * NewAccountController handles user registration.
- * It provides methods for displaying the signup page and creating
- * new user accounts.
- */
 export default class NewAccountController {
-  /**
-   * Display the signup page
-   */
-  async create({ view }: HttpContext) {
-    return view.render('pages/auth/signup')
+  async index({ view }: HttpContext) {
+    return view.render('pages/index')
   }
 
-  /**
-   * Create a new user account and authenticate the user
-   */
   async store({ request, response, auth }: HttpContext) {
-    const payload = await request.validateUsing(signupValidator)
-    const user = await User.create({ ...payload })
+    const data = request.only(['fullName', 'email', 'password'])
+    
+    const user = await User.create({
+      fullName: data.fullName || '',
+      email: data.email,
+      password: data.password,
+    })
 
     await auth.use('web').login(user)
-    response.redirect().toRoute('home')
+    
+    // Correction ici : on utilise toPath pour éviter le conflit de nom de route
+    return response.redirect().toPath('/')
   }
 }
